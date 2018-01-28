@@ -1,0 +1,6 @@
+docs/site/
+.tox
+MANIFEST
+.cache
+__pycache__
+junit-*.xml

@@ -12,6 +12,9 @@ name = "pypi"
 
 [dev-packages]
 
+tox = "*"
+mkdocs = "*"
+pytest-xdist = "*"
 
 
 [requires]
