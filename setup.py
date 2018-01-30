@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(name='jool',
       version='0.1',
@@ -8,5 +8,13 @@ setup(name='jool',
       author='Peter Damianov',
       author_email='pddamianov@gmail.com',
       url='https://github.com/lobostome/jool',
-      packages=[],
+      license='MIT',
+      packages=find_packages(exclude=['docs', 'tests*']),
+      install_requires=['pygit2'],
+      python_requires='>=3.6',
+      entry_points={
+        'console_scripts': [
+          'jool=jool:main',
+        ],
+    }
 )

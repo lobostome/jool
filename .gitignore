@@ -4,3 +4,5 @@ MANIFEST
 .cache
 __pycache__
 junit-*.xml
+*.egg-info
+dist/
