@@ -16,7 +16,7 @@ def gitrepo():
 
         g = Git(os.environ['JOOL_PUBLIC_KEY'], os.environ['JOOL_PRIVATE_KEY'])
         with cd(l.directory):
-            g.clone_repository(test_repo, cloned_repo)
-            yield l.directory, test_repo, cloned_repo
+            g.clone_repo(test_repo, cloned_repo)
+            yield l.directory, g
     finally:
         l.remove_temp_directory()
