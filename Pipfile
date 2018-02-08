@@ -8,6 +8,7 @@ name = "pypi"
 [packages]
 
 "pygit2" = "*"
+pandas = "*"
 
 
 [dev-packages]

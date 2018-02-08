@@ -10,7 +10,7 @@ setup(name='jool',
       url='https://github.com/lobostome/jool',
       license='MIT',
       packages=find_packages(exclude=['docs', 'tests*']),
-      install_requires=['pygit2'],
+      install_requires=['pygit2', 'pandas'],
       python_requires='>=3.6',
       entry_points={
         'console_scripts': [
