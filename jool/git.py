@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository, GIT_SORT_TOPOLOGICAL, GIT_SORT_REVERSE
+from .data import Frame
 
 class Git(object):
     def __init__(self, public_key, private_key, repo_from=None, repo_to=None):
         self.public_key = public_key
         self.private_key = private_key
+        self.frame = Frame()
 
     def clone_repo(self, repo_from, repo_to):
         self.repo_from = repo_from
@@ -17,8 +19,17 @@ class Git(object):
 
     def traverse(self):
         repo = Repository('%s/.git' % self.repo_to)
-        commits = []
+        commit_ids = []
+        commit_messages = []
+        commit_authors = []
         for commit in repo.walk(repo.head.target, GIT_SORT_REVERSE):
-            commits.append(commit.id)
+            commit_ids.append(commit.id)
+            commit_messages.append(commit.message)
+            commit_authors.append(commit.author)
+        self.frame.add_column("commit_id", commit_ids)
+        self.frame.add_column("commit_message", commit_messages)
+        self.frame.add_column("commit_author", commit_authors)
 
-        return commits
+    @property
+    def dataset(self):
+        return self.frame

@@ -8,4 +8,6 @@ def test_clone_repo(gitrepo):
 
 def test_walk_repo(gitrepo):
     directory, g = gitrepo
-    assert len(g.traverse()) > 0
+    g.traverse()
+    assert g.dataset.number_of_rows > 0
+    assert g.dataset.number_of_columns == 3
