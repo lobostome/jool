@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository, GIT_SORT_TOPOLOGICAL, GIT_SORT_REVERSE
+from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
+from pygit2 import GIT_SORT_REVERSE
 from .data import Frame
+
 
 class Git(object):
     def __init__(self, public_key, private_key, repo_from=None, repo_to=None):
@@ -22,13 +24,21 @@ class Git(object):
         commit_ids = []
         commit_messages = []
         commit_authors = []
-        for commit in repo.walk(repo.head.target, GIT_SORT_REVERSE):
+
+        generator_expression = (
+            commit for commit in repo.walk(
+                repo.head.target,
+                GIT_SORT_REVERSE) if not commit.message.startswith('Merge'))
+
+        for commit in generator_expression:
             commit_ids.append(commit.id)
             commit_messages.append(commit.message)
-            commit_authors.append(commit.author)
+            commit_authors.append(commit.author.name)
+
         self.frame.add_column("commit_id", commit_ids)
         self.frame.add_column("commit_message", commit_messages)
         self.frame.add_column("commit_author", commit_authors)
+
 
     @property
     def dataset(self):

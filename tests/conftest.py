@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
 
-import os, pytest
+import os
+import pytest
 from jool.utils import cd
 from jool.directory import Location
 from jool.git import Git
+
 
 @pytest.fixture()
 def gitrepo():
     test_repo = "git@github.com:requests/requests.git"
     cloned_repo = "requests"
+    location = Location()
+    location.directory = location.generate_temp_directory_name()
     try:
-        l = Location()
-        l.directory = l.generate_temp_directory_name()
-        l.create_temp_directory()
+        location.create_temp_directory()
 
         g = Git(os.environ['JOOL_PUBLIC_KEY'], os.environ['JOOL_PRIVATE_KEY'])
-        with cd(l.directory):
+        with cd(location.directory):
             g.clone_repo(test_repo, cloned_repo)
-            yield l.directory, g
+            yield location.directory, g
     finally:
-        l.remove_temp_directory()
+        location.remove_temp_directory()

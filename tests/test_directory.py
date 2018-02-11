@@ -1,23 +1,27 @@
 # -*- coding: utf-8 -*-
 
-import os, shutil
+import os
 from jool.directory import Location
 
+
 def test_set_directory():
-    l = Location()
+    location = Location()
     value = 'sthrandom'
-    l.directory = value
-    assert l.directory == value
+    location.directory = value
+    assert location.directory == value
+
 
 def test_generate_temp_directory_name():
-    l = Location()
-    assert l.generate_temp_directory_name().startswith("%s/%s" % (l.BASE_DIR, l.PREFIX))
+    location = Location()
+    assert location.generate_temp_directory_name().startswith(
+        "%s/%s" % (location.BASE_DIR, location.PREFIX))
+
 
 def test_create_remove_temp_directory():
-    l = Location()
-    l.directory = l.generate_temp_directory_name()
+    location = Location()
+    location.directory = location.generate_temp_directory_name()
 
-    l.create_temp_directory()
-    assert os.path.exists(l.directory)
-    l.remove_temp_directory()
-    assert not os.path.exists(l.directory)
+    location.create_temp_directory()
+    assert os.path.exists(location.directory)
+    location.remove_temp_directory()
+    assert not os.path.exists(location.directory)

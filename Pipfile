@@ -16,6 +16,8 @@ pandas = "*"
 tox = "*"
 mkdocs = "*"
 pytest-xdist = "*"
+"autopep8" = "*"
+"flake8" = "*"
 
 
 [requires]

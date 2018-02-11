@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import os, shutil, uuid
+import os
+import shutil
+import uuid
 from .utils import constant
+
 
 class Location(object):
 
-    def __init__(self, directory = None):
+    def __init__(self, directory=None):
         self._directory = directory
 
     def create_temp_directory(self):

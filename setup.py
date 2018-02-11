@@ -13,8 +13,8 @@ setup(name='jool',
       install_requires=['pygit2', 'pandas'],
       python_requires='>=3.6',
       entry_points={
-        'console_scripts': [
-          'jool=jool:main',
-        ],
-    }
-)
+          'console_scripts': [
+              'jool=jool:main',
+          ],
+      }
+      )
