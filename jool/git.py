@@ -3,6 +3,7 @@
 from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
 from pygit2 import GIT_SORT_REVERSE
 from .data import Frame
+import re
 
 
 class Git(object):
@@ -28,7 +29,8 @@ class Git(object):
         generator_expression = (
             commit for commit in repo.walk(
                 repo.head.target,
-                GIT_SORT_REVERSE) if not commit.message.startswith('Merge'))
+                GIT_SORT_REVERSE) if not re.match(
+                    r'^merge', commit.message, re.IGNORECASE))
 
         for commit in generator_expression:
             commit_ids.append(commit.id)
@@ -38,7 +40,6 @@ class Git(object):
         self.frame.add_column("commit_id", commit_ids)
         self.frame.add_column("commit_message", commit_messages)
         self.frame.add_column("commit_author", commit_authors)
-
 
     @property
     def dataset(self):
