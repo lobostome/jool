@@ -3,6 +3,7 @@
 from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
 from pygit2 import GIT_SORT_REVERSE
 from .data import Frame
+from .utils import FramePopulator
 import re
 
 
@@ -22,9 +23,7 @@ class Git(object):
 
     def traverse(self):
         repo = Repository('%s/.git' % self.repo_to)
-        commit_ids = []
-        commit_messages = []
-        commit_authors = []
+        populator = FramePopulator(self.frame)
 
         generator_expression = (
             commit for commit in repo.walk(
@@ -33,13 +32,9 @@ class Git(object):
                     r'^merge', commit.message, re.IGNORECASE))
 
         for commit in generator_expression:
-            commit_ids.append(commit.id)
-            commit_messages.append(commit.message)
-            commit_authors.append(commit.author.name)
+            populator.create_lists(commit)
 
-        self.frame.add_column("commit_id", commit_ids)
-        self.frame.add_column("commit_message", commit_messages)
-        self.frame.add_column("commit_author", commit_authors)
+        populator.to_frame()
 
     @property
     def dataset(self):
