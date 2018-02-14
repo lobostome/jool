@@ -2,6 +2,7 @@
 
 import os
 from contextlib import contextmanager
+from abc import ABCMeta, abstractmethod
 
 
 def constant(f):
@@ -21,6 +22,23 @@ def cd(new_dir):
         yield
     finally:
         os.chdir(prev_dir)
+
+
+class final(type):
+    def __init__(cls, name, bases, namespace):
+        super(final, cls).__init__(name, bases, namespace)
+        for klass in bases:
+            if isinstance(klass, final):
+                raise TypeError(str(klass.__name__) + " is final")
+
+
+class Singleton(type):
+    instance = None
+
+    def __call__(cls, *args, **kw):
+        if not cls.instance:
+            cls.instance = super(Singleton, cls).__call__(*args, **kw)
+        return cls.instance
 
 
 class FramePopulator(object):
@@ -45,3 +63,10 @@ class FramePopulator(object):
 
     def extract_key(self, index):
         return index.split('_', maxsplit=1)[1]
+
+
+class TransformInterface(object, metaclass=ABCMeta):
+
+    @abstractmethod
+    def convert(self, value: str) -> str:
+        pass
