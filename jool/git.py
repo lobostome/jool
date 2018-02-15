@@ -3,7 +3,7 @@
 from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
 from pygit2 import GIT_SORT_REVERSE
 from .data import Frame
-from .utils import FramePopulator
+from abc import ABCMeta, abstractmethod
 import re
 
 
@@ -39,3 +39,48 @@ class Git(object):
     @property
     def dataset(self):
         return self.frame
+
+
+class TransformInterface(object, metaclass=ABCMeta):
+
+    @abstractmethod
+    def convert(self, value: str) -> str:
+        pass
+
+
+class AuthorTransform(TransformInterface):
+
+    def convert(self, value: str) -> str:
+        return value.name
+
+
+class FramePopulator(object):
+    def __init__(self, frame):
+        self.lists = {}
+        self.frame = frame
+        self.variables = ['commit_id', 'commit_message', 'commit_author']
+        for variable in self.variables:
+            self.lists[variable] = []
+
+    def create_lists(self, commit):
+        for variable in self.variables:
+            key = self.extract_key(variable)
+            value = getattr(commit, key)
+            if self.create_transform_classname(key) in globals():
+                value = self.transform(key, value)
+            self.lists[variable].append(value)
+
+    def to_frame(self):
+        for variable in self.variables:
+            self.frame.add_column(variable, self.lists[variable])
+
+    def extract_key(self, index):
+        return index.split('_', maxsplit=1)[1]
+
+    def create_transform_classname(self, value: str) -> str:
+        return "%sTransform" % value.title()
+
+    def transform(self, class_key: str, value: str) -> TransformInterface:
+        class_name = self.create_transform_classname(class_key)
+        object = globals()[class_name]
+        return object().convert(value)
