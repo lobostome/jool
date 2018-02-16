@@ -32,7 +32,7 @@ class Git(object):
                     r'^merge', commit.message, re.IGNORECASE))
 
         for commit in generator_expression:
-            populator.create_lists(commit)
+            populator.add_commit_to_lists(commit)
 
         populator.to_frame()
 
@@ -58,16 +58,17 @@ class FramePopulator(object):
     def __init__(self, frame):
         self.lists = {}
         self.frame = frame
-        self.variables = ['commit_id', 'commit_message', 'commit_author']
+        self.variables = ['commit_id', 'commit_message', 'commit_author', 'is_bug']
         for variable in self.variables:
             self.lists[variable] = []
 
-    def create_lists(self, commit):
+    def add_commit_to_lists(self, commit):
         for variable in self.variables:
             key = self.extract_key(variable)
-            value = getattr(commit, key)
-            if self.create_transform_classname(key) in globals():
-                value = self.transform(key, value)
+            if variable.startswith('commit') and  self.create_transform_classname(key) in globals():
+                value = self.transform(key, getattr(commit, key))
+            else:
+                value = ""
             self.lists[variable].append(value)
 
     def to_frame(self):

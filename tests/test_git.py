@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from pygit2 import Repository
 import os
 
 
