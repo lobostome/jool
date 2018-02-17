@@ -4,6 +4,7 @@ from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
 from pygit2 import Commit, Diff, GIT_SORT_REVERSE
 from .data import Frame
 from abc import ABCMeta, abstractmethod
+from stemming.porter2 import stem
 import re
 
 
@@ -41,6 +42,20 @@ class Git(object):
         return self.frame
 
 
+class FilterInterface(object, metaclass=ABCMeta):
+
+    @abstractmethod
+    def filter(self, words: list) -> bool:
+        pass
+
+
+class BugFilter(FilterInterface):
+
+    def filter(self, words: list) -> bool:
+        counter = [word for word in words if stem(word) == 'fix']
+        return True if len(counter) > 0 else False
+
+
 class TransformInterface(object, metaclass=ABCMeta):
 
     @abstractmethod
@@ -58,14 +73,15 @@ class AuthorTransform(TransformInterface):
 class BugTransform(TransformInterface):
 
     def convert(self, key: str, commit: Commit) -> str:
-        return "y"
+        value = 'n'
+        return value
 
 
 class FramePopulator(object):
     def __init__(self, frame):
         self.lists = {}
         self.frame = frame
-        self.variables = ['commit_id', 'commit_message', 'commit_author', 'feature_bug']
+        self.variables = ['commit_id', 'commit_message', 'commit_author', 'is_bug']
         for variable in self.variables:
             self.lists[variable] = []
 

@@ -9,6 +9,7 @@ name = "pypi"
 
 "pygit2" = "*"
 pandas = "*"
+stemming = "*"
 
 
 [dev-packages]
