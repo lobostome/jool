@@ -4,8 +4,8 @@ from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
 from pygit2 import Commit, Diff, GIT_SORT_REVERSE
 from .data import Frame
 from abc import ABCMeta, abstractmethod
-from stemming.porter2 import stem
 from nltk.tokenize import word_tokenize
+from nltk.stem.porter import PorterStemmer
 import re
 
 
@@ -53,7 +53,8 @@ class FilterInterface(object, metaclass=ABCMeta):
 class BugFilter(FilterInterface):
 
     def filter(self, words: list) -> bool:
-        counter = [word for word in words if stem(word.lower()) == 'fix']
+        stemmer = PorterStemmer()
+        counter = [word for word in words if stemmer.stem(word) == 'fix']
         return True if len(counter) > 0 else False
 
 
