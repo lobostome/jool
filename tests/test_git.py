@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from pygit2 import Repository
 from jool.git import BugFilter
 import os
 

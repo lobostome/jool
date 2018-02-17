@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
-from pygit2 import Commit, Diff, GIT_SORT_REVERSE
+from pygit2 import Commit, GIT_SORT_REVERSE
 from .data import Frame
 from abc import ABCMeta, abstractmethod
 from nltk.tokenize import word_tokenize
@@ -84,7 +84,11 @@ class FramePopulator(object):
     def __init__(self, frame):
         self.lists = {}
         self.frame = frame
-        self.variables = ['commit_id', 'commit_message', 'commit_author', 'is_bug']
+        self.variables = [
+            'commit_id',
+            'commit_message',
+            'commit_author',
+            'is_bug']
         for variable in self.variables:
             self.lists[variable] = []
 
