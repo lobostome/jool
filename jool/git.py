@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
-from pygit2 import GIT_SORT_REVERSE
+from pygit2 import Commit, Diff, GIT_SORT_REVERSE
 from .data import Frame
 from abc import ABCMeta, abstractmethod
 import re
@@ -44,31 +44,40 @@ class Git(object):
 class TransformInterface(object, metaclass=ABCMeta):
 
     @abstractmethod
-    def convert(self, value: str) -> str:
+    def convert(self, key: str, commit: Commit) -> str:
         pass
 
 
 class AuthorTransform(TransformInterface):
 
-    def convert(self, value: str) -> str:
+    def convert(self, key: str, commit: Commit) -> str:
+        value = getattr(commit, key)
         return value.name
+
+
+class BugTransform(TransformInterface):
+
+    def convert(self, key: str, commit: Commit) -> str:
+        return "y"
 
 
 class FramePopulator(object):
     def __init__(self, frame):
         self.lists = {}
         self.frame = frame
-        self.variables = ['commit_id', 'commit_message', 'commit_author', 'is_bug']
+        self.variables = ['commit_id', 'commit_message', 'commit_author', 'feature_bug']
         for variable in self.variables:
             self.lists[variable] = []
 
-    def add_commit_to_lists(self, commit):
+    def add_commit_to_lists(self, commit: Commit):
+        value = None
         for variable in self.variables:
             key = self.extract_key(variable)
-            if variable.startswith('commit') and  self.create_transform_classname(key) in globals():
-                value = self.transform(key, getattr(commit, key))
+            if self.create_transform_classname(key) in globals():
+                value = self.transform(key, commit)
+                # diff = cur.tree.diff_to_tree(prev.tree)
             else:
-                value = ""
+                value = getattr(commit, key)
             self.lists[variable].append(value)
 
     def to_frame(self):
@@ -81,7 +90,7 @@ class FramePopulator(object):
     def create_transform_classname(self, value: str) -> str:
         return "%sTransform" % value.title()
 
-    def transform(self, class_key: str, value: str) -> TransformInterface:
+    def transform(self, class_key: str, commit: Commit) -> TransformInterface:
         class_name = self.create_transform_classname(class_key)
         object = globals()[class_name]
-        return object().convert(value)
+        return object().convert(class_key, commit)
