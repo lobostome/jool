@@ -5,11 +5,7 @@ import pandas
 
 class Frame(object):
     def __init__(self):
-        self._data = pandas.DataFrame(
-            columns=[
-                'commit_id',
-                'commit_message',
-                'commit_author'])
+        self._data = pandas.DataFrame()
 
     def add_column(self, name, values):
         self._data[name] = values
