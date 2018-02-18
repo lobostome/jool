@@ -13,7 +13,7 @@ def test_walk_repo(gitrepo):
     directory, g = gitrepo
     g.traverse()
     assert g.dataset.number_of_rows > 0
-    assert g.dataset.number_of_columns == 4
+    assert g.dataset.number_of_columns == 5
 
 
 def test_filter_has_bugs():
