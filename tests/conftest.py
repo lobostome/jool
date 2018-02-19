@@ -9,8 +9,8 @@ from jool.git import Git
 
 @pytest.fixture()
 def gitrepo():
-    test_repo = "git@github.com:requests/requests.git"
-    cloned_repo = "requests"
+    test_repo = "git@github.com:lobostome/jool.git"
+    cloned_repo = "jool"
     location = Location()
     location.directory = location.generate_temp_directory_name()
     try:

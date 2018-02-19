@@ -35,21 +35,23 @@ class Git(object):
 
         previous, diff = None, None
         for commit in generator_expression:
-            commit, previous, diff = self.determine_diff(
-                commit, previous, diff)
+            previous, diff = self.determine_diff(
+                repo, commit, previous, diff)
             populator.add_commit_to_lists(commit, diff)
 
         populator.to_frame()
 
-    def determine_diff(self, commit, previous, diff):
+    def determine_diff(self, repo, commit, previous, diff):
         if previous is not None:
-            diff = commit.tree.diff_to_tree(previous.tree)
+            diff = repo.diff(str(commit.id), str(previous.id))
+        else:
+            tree = repo.revparse_single(str(commit.id)).tree
+            diff = tree.diff_to_tree()
 
         if commit.parents:
             previous = commit
-            commit = commit.parents[0]
 
-        return commit, previous, diff
+        return (previous, diff)
 
     @property
     def dataset(self):
@@ -96,11 +98,8 @@ class BugTransform(TransformInterface):
 class FilesTransform(TransformInterface):
 
     def convert(self, key: str, commit: Commit, diff: Diff) -> str:
-        files = []
-        if diff is not None:
-            for patch in diff:
-                files.append(patch.delta.new_file.path)
-        return ' '.join(files)
+        return ' '.join([p.delta.new_file.path for p in diff]
+                        if len(diff) > 0 else [])
 
 
 class FramePopulator(object):
