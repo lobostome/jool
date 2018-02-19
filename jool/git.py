@@ -102,6 +102,33 @@ class FilesTransform(TransformInterface):
                         if len(diff) > 0 else [])
 
 
+class AddedTransform(TransformInterface):
+
+    def convert(self, key: str, commit: Commit, diff: Diff) -> str:
+        content = []
+        for p in diff:
+            for h in p.hunks:
+                for l in h.lines:
+                    if l.new_lineno == -1:
+                        # import pdb; pdb.set_trace()
+                        content.append(l.content)
+
+        return " ".join(content)
+
+
+class DeletedTransform(TransformInterface):
+
+    def convert(self, key: str, commit: Commit, diff: Diff) -> str:
+        content = []
+        for p in diff:
+            for h in p.hunks:
+                for l in h.lines:
+                    if l.old_lineno == -1:
+                        content.append(l.content)
+
+        return " ".join(content)
+
+
 class FramePopulator(object):
     def __init__(self, frame):
         self.lists = {}
@@ -109,8 +136,10 @@ class FramePopulator(object):
         self.variables = [
             'commit_id',
             'commit_message',
-            'commit_author',
             'commit_files',
+            'delta_added',
+            'delta_deleted',
+            'commit_author',
             '_commit_time',
             'is_bug']
         for variable in self.variables:
