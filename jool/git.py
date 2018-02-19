@@ -111,6 +111,7 @@ class FramePopulator(object):
             'commit_message',
             'commit_author',
             'commit_files',
+            '_commit_time',
             'is_bug']
         for variable in self.variables:
             self.lists[variable] = []
