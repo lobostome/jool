@@ -79,6 +79,15 @@ class TransformInterface(object, metaclass=ABCMeta):
     def convert(self, key: str, commit: Commit, diff: Diff) -> str:
         pass
 
+    def filter_diff_line(self, diff: Diff, key: str, value) -> list:
+        content = []
+        for p in diff:
+            for h in p.hunks:
+                for l in h.lines:
+                    if getattr(l, key) == value:
+                        content.append(l.content.strip())
+        return content
+
 
 class AuthorTransform(TransformInterface):
 
@@ -107,28 +116,13 @@ class FilesTransform(TransformInterface):
 class AddedTransform(TransformInterface):
 
     def convert(self, key: str, commit: Commit, diff: Diff) -> str:
-        content = []
-        for p in diff:
-            for h in p.hunks:
-                for l in h.lines:
-                    if l.new_lineno == -1:
-                        # import pdb; pdb.set_trace()
-                        content.append(l.content.strip())
-
-        return " ".join(content)
+        return " ".join(self.filter_diff_line(diff, 'new_lineno', -1))
 
 
 class DeletedTransform(TransformInterface):
 
     def convert(self, key: str, commit: Commit, diff: Diff) -> str:
-        content = []
-        for p in diff:
-            for h in p.hunks:
-                for l in h.lines:
-                    if l.old_lineno == -1:
-                        content.append(l.content.strip())
-
-        return " ".join(content)
+        return " ".join(self.filter_diff_line(diff, 'old_lineno', -1))
 
 
 class FramePopulator(object):
