@@ -6,7 +6,7 @@ from .data import Frame
 from abc import ABCMeta, abstractmethod
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
-import re
+import re, functools
 
 
 class Git(object):
@@ -98,8 +98,10 @@ class BugTransform(TransformInterface):
 class FilesTransform(TransformInterface):
 
     def convert(self, key: str, commit: Commit, diff: Diff) -> str:
-        return ' '.join([p.delta.new_file.path for p in diff]
-                        if len(diff) > 0 else [])
+        files = [p.delta.new_file.path.split(
+            '/') for p in diff] if len(diff) > 0 else []
+        files = functools.reduce(lambda x,y :x+y, files)
+        return ' '.join(list(set(files)))
 
 
 class AddedTransform(TransformInterface):
@@ -111,7 +113,7 @@ class AddedTransform(TransformInterface):
                 for l in h.lines:
                     if l.new_lineno == -1:
                         # import pdb; pdb.set_trace()
-                        content.append(l.content)
+                        content.append(l.content.strip())
 
         return " ".join(content)
 
@@ -124,7 +126,7 @@ class DeletedTransform(TransformInterface):
             for h in p.hunks:
                 for l in h.lines:
                     if l.old_lineno == -1:
-                        content.append(l.content)
+                        content.append(l.content.strip())
 
         return " ".join(content)
 
