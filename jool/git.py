@@ -6,7 +6,8 @@ from .data import Frame
 from abc import ABCMeta, abstractmethod
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
-import re, functools
+import re
+import functools
 
 
 class Git(object):
@@ -109,7 +110,7 @@ class FilesTransform(TransformInterface):
     def convert(self, key: str, commit: Commit, diff: Diff) -> str:
         files = [p.delta.new_file.path.split(
             '/') for p in diff] if len(diff) > 0 else []
-        files = functools.reduce(lambda x,y :x+y, files)
+        files = functools.reduce(lambda x, y: x + y, files)
         return ' '.join(list(set(files)))
 
 
