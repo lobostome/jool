@@ -59,6 +59,13 @@ class Git(object):
         return self.frame
 
 
+class MapInterface(object, metaclass=ABCMeta):
+
+    @abstractmethod
+    def map(self, line):
+        pass
+
+
 class FilterInterface(object, metaclass=ABCMeta):
 
     @abstractmethod
