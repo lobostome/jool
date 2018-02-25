@@ -9,7 +9,7 @@ from jool.git import Git
 
 @pytest.fixture()
 def gitrepo():
-    test_repo = "git@github.com:lobostome/jool.git"
+    test_repo = "%s/%s" % (os.getcwd(), "testrepo.git/")
     cloned_repo = "jool"
     location = Location()
     location.directory = location.generate_temp_directory_name()
