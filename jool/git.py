@@ -104,6 +104,13 @@ class AuthorTransform(TransformInterface):
         return value.name
 
 
+class MessageTransform(TransformInterface):
+
+    def convert(self, key: str, commit: Commit, diff: Diff) -> str:
+        value = getattr(commit, key)
+        return value.rstrip()
+
+
 class BugTransform(TransformInterface):
 
     def convert(self, key: str, commit: Commit, diff: Diff) -> str:
