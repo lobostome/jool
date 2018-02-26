@@ -2,6 +2,8 @@
 
 import os
 import pytest
+import shutil
+import tarfile
 from jool.utils import cd
 from jool.directory import Location
 from jool.git import Git
@@ -9,15 +11,27 @@ from jool.git import Git
 
 @pytest.fixture()
 def gitrepo():
-    test_repo = "%s/%s" % (os.getcwd(), "testrepo.git/")
-    cloned_repo = "jool"
+    test_repo = 'testrepo.git'
+    test_repo_tar = "%s.tar" % test_repo
+    test_repo_dir = os.path.dirname(os.path.realpath(__file__))
+    cloned_repo = 'jool'
+
     location = Location()
     location.directory = location.generate_temp_directory_name()
-    try:
-        location.create_temp_directory()
+    location.create_temp_directory()
 
-        g = Git(os.environ['JOOL_PUBLIC_KEY'], os.environ['JOOL_PRIVATE_KEY'])
+    shutil.copyfile(
+        src="%s/%s" % (test_repo_dir, test_repo_tar),
+        dst="%s/%s" % (location.directory, test_repo_tar))
+
+    try:
         with cd(location.directory):
+            with tarfile.open(test_repo_tar) as tar:
+                tar.extractall()
+
+            g = Git(
+                os.environ['JOOL_PUBLIC_KEY'],
+                os.environ['JOOL_PRIVATE_KEY'])
             g.clone_repo(test_repo, cloned_repo)
             yield location.directory, g
     finally:
