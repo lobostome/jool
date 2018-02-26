@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from jool.git import BugFilter, FramePopulator
+from jool.git import BugFilter, FramePopulator, BugMap
 from jool.data import Frame
+from pygit2 import Repository
 import os
 
 
@@ -46,3 +47,15 @@ def test_populator_create_transform_classname():
     value = 'author'
     expected = 'AuthorTransform'
     assert populator.create_transform_classname(value) == expected
+
+
+def test_blame_mapper(gitrepo):
+    directory, g = gitrepo
+    repo = Repository("%s/jool/.git" % directory)
+    commit = repo.revparse_single('9aeaac94cda9eb7e32d6f861079ab793a0311983')
+    mapper = BugMap()
+    assert mapper.map(
+        repo,
+        'c/d.py',
+        5,
+        commit) == '903b2d2c65f291492f30467edc6442b74a78ab92'

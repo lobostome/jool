@@ -62,8 +62,26 @@ class Git(object):
 class MapInterface(object, metaclass=ABCMeta):
 
     @abstractmethod
-    def map(self, line):
+    def map(
+            self,
+            repo: Repository,
+            file_name: str,
+            line: int,
+            commit: Commit) -> str:
         pass
+
+
+class BugMap(MapInterface):
+
+    def map(
+            self,
+            repo: Repository,
+            file_name: str,
+            line: int,
+            commit: Commit) -> str:
+        blamer = repo.blame(file_name, newest_commit=commit.parent_ids[0])
+        hunk = blamer.for_line(line)
+        return str(hunk.orig_commit_id)
 
 
 class FilterInterface(object, metaclass=ABCMeta):
