@@ -1,0 +1,5 @@
+#!/bin/bash
+ABSOLUTE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+BASE_DIR=$(basename $ABSOLUTE_DIR)
+
+docker-compose -f $ABSOLUTE_DIR/docker/docker-compose.yml run --rm $BASE_DIR

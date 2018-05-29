@@ -1,0 +1,14 @@
+version: '3'
+services:
+  jool:
+    build: .
+    environment:
+      - GIT_USER_NAME=${GIT_USER_NAME}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL}
+      - GIT_USER_GPG_KEY=${GIT_USER_GPG_KEY}
+    volumes:
+      - ..:/code
+      - /keys/gpg:/root/.gnupg
+      - /gpg-agent:/gpg-agent
+    working_dir: /code
+    command: sh -l
