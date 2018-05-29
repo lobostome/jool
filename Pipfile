@@ -1,27 +1,20 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
-"pygit2" = "*"
+pygit2 = "*"
 pandas = "*"
 stemming = "*"
 nltk = "*"
 
-
 [dev-packages]
-
 tox = "*"
 mkdocs = "*"
 pytest-xdist = "*"
 "autopep8" = "*"
 "flake8" = "*"
 
-
 [requires]
-
 python_version = "3.6"

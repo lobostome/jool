@@ -1,11 +1,12 @@
-FROM alpine:3.7
+FROM alpine:edge
 
 COPY files .
 
 RUN apk update && \
     apk add --no-cache \
       curl \
-      python3 \
+      python3=3.6.4-r1 \
+      libgit2=0.27.0-r0 \
       git \
       gnupg && \
     python3 -m ensurepip && \
