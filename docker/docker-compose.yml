@@ -10,5 +10,6 @@ services:
       - ..:/code
       - /keys/gpg:/root/.gnupg
       - /gpg-agent:/gpg-agent
+      - ~/.ssh:/root/.ssh
     working_dir: /code
     command: sh -l
