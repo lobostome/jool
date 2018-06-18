@@ -1,3 +1,4 @@
+.DS_Store
 docs/site/
 .tox
 MANIFEST
@@ -7,3 +8,4 @@ junit-*.xml
 *.egg-info
 dist/
 .pytest_cache/
+data

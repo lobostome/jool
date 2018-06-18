@@ -20,14 +20,14 @@ def test_walk_repo(gitrepo):
 
 def test_filter_has_bugs():
     f = BugFilter()
-    value = f.filter(['this', 'is', 'a', 'bug', 'with', 'fixes'])
-    assert value
+    bug = f.filter(['this', 'is', 'a', 'bug', 'with', 'fixes'])
+    assert bug
 
 
 def test_filter_no_bugs():
     f = BugFilter()
-    value = f.filter(['this', 'has', 'no', 'issues'])
-    assert not value
+    bug = f.filter(['this', 'has', 'no', 'issues'])
+    assert not bug
 
 
 def test_populator_extract_key():

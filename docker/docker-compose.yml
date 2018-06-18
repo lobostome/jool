@@ -9,7 +9,7 @@ services:
     volumes:
       - ..:/code
       - /keys/gpg:/root/.gnupg
+      - /keys/ssh:/vault
       - /gpg-agent:/gpg-agent
-      - ~/.ssh:/root/.ssh
     working_dir: /code
     command: sh -l

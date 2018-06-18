@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pygit2 import Keypair, RemoteCallbacks, Repository, clone_repository
-from pygit2 import Commit, Diff, GIT_SORT_REVERSE
+from pygit2 import Commit, Diff, GIT_SORT_REVERSE, Oid
 from .data import Frame
 from abc import ABCMeta, abstractmethod
 from nltk.tokenize import word_tokenize
@@ -38,7 +38,7 @@ class Git(object):
         for commit in generator_expression:
             previous, diff = self.determine_diff(
                 repo, commit, previous, diff)
-            populator.add_commit_to_lists(commit, diff)
+            populator.add_commit_to_lists(repo, commit, diff)
 
         populator.to_frame()
 
@@ -49,8 +49,7 @@ class Git(object):
             tree = repo.revparse_single(str(commit.id)).tree
             diff = tree.diff_to_tree()
 
-        if commit.parents:
-            previous = commit
+        previous = commit
 
         return (previous, diff)
 
@@ -174,20 +173,40 @@ class FramePopulator(object):
         for variable in self.variables:
             self.lists[variable] = []
 
-    def add_commit_to_lists(self, commit: Commit, diff: Diff):
+    def add_commit_to_lists(self, repo: Repository, commit: Commit, diff: Diff):
         for variable in self.variables:
             key = self.extract_key(variable)
             if self.create_transform_classname(key) in globals():
                 value = self.transform(key, commit, diff)
             else:
                 value = getattr(commit, key)
+
+            if key == 'bug' and value == 'y':
+                buggy_commits = self.get_bug_introducing_commits(repo, commit, diff)
+                for buggy_commit in buggy_commits:
+                    if buggy_commit in self.lists['commit_id']:
+                        index = self.lists['commit_id'].index(buggy_commit)
+                        self.lists['is_bug'][index] = 'y'
+                        value = 'n'
+
             self.lists[variable].append(value)
+
+    def get_bug_introducing_commits(self, repo: Repository, commit: Commit, diff: Diff) -> list:
+        buggy_commits = set()
+        mapper = BugMap()
+        for patch in diff:
+            file = patch.delta.new_file.path
+            for hunk in patch.hunks:
+                for line in hunk.lines:
+                    if line.new_lineno != -1:
+                        buggy_commits.add(Oid(hex=mapper.map(repo, file, line.new_lineno, commit)))
+        return buggy_commits
 
     def to_frame(self):
         for variable in self.variables:
             self.frame.add_column(variable, self.lists[variable])
 
-    def extract_key(self, index):
+    def extract_key(self, index: str) -> str:
         return index.split('_', maxsplit=1)[1]
 
     def create_transform_classname(self, value: str) -> str:
